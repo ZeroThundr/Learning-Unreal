@@ -13,5 +13,7 @@ UCLASS()
 class GENERICFPS_API AGenericFPSGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+	virtual void StartPlay() override;
 	
 };
