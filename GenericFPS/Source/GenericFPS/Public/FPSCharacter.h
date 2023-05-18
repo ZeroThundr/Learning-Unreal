@@ -10,6 +10,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "FPSProjectile.h"
 #include "FPSCharacter.generated.h"
 
 class UInputComponent;
@@ -21,6 +22,7 @@ UCLASS()
 class GENERICFPS_API AFPSCharacter : public ACharacter
 {
 	GENERATED_BODY()
+	
 	UPROPERTY(VisibleAnywhere, Category=Mesh)
 	USkeletalMeshComponent* Mesh1P;
 
@@ -36,25 +38,40 @@ class GENERICFPS_API AFPSCharacter : public ACharacter
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=Input,meta=(AllowPrivateAccess="true"))
 	UInputAction* MoveAction;
 
-
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=Input, meta=(AllowPrivateAccess="True"))
+	UInputAction* FireAction;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=Input,meta=(AllowPrivateAccess="true"))
+	UInputAction* LookAction;
 
 public:
 	// Sets default values for this character's properties
 	AFPSCharacter();
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=Input,meta=(AllowPrivateAccess="true"))
-	class UInputAction* LookAction;
+	
 protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-protected:
+
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	TSubclassOf<AFPSProjectile> ProjectileClass;
+	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	
 public:
 	USkeletalMeshComponent* GetMesh1P() const {return Mesh1P;}
 	UCameraComponent* GetFirstPersonCameraComponment()const{return  FirstPersonCameraComponent;}
+
+	UFUNCTION()
+	void Fire();
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Gameplay)
+	FVector MuzzleOffset;
 };

@@ -60,12 +60,14 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(JumpAction,ETriggerEvent::Triggered,this, &AFPSCharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction,ETriggerEvent::Completed,this, &AFPSCharacter::StopJumping);
+		EnhancedInputComponent -> BindAction(JumpAction,ETriggerEvent::Triggered,this, &AFPSCharacter::Jump);
+		EnhancedInputComponent -> BindAction(JumpAction,ETriggerEvent::Completed,this, &AFPSCharacter::StopJumping);
 
-		EnhancedInputComponent->BindAction(MoveAction,ETriggerEvent::Triggered,this,&AFPSCharacter::Move);
+		EnhancedInputComponent -> BindAction(MoveAction,ETriggerEvent::Triggered,this,&AFPSCharacter::Move);
 
-		EnhancedInputComponent->BindAction(LookAction,ETriggerEvent::Triggered,this,&AFPSCharacter::Look);
+		EnhancedInputComponent -> BindAction(LookAction,ETriggerEvent::Triggered,this,&AFPSCharacter::Look);
+
+		EnhancedInputComponent -> BindAction(FireAction, ETriggerEvent::Triggered,this,&AFPSCharacter::Fire);
 		
 	}
 }
@@ -87,10 +89,43 @@ void AFPSCharacter::Look(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		AddControllerYawInput(LookAxisVector.X);
-		GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("We are using the FPSChar class."));
 		AddControllerPitchInput(LookAxisVector.Y);
-		FString YValue = LookAxisVector.ToString();
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%s"), *YValue));
+	}
+}
+void AFPSCharacter::Fire()
+{
+	if (Controller != nullptr)
+	{
+		GEngine -> AddOnScreenDebugMessage(-1, 5.0f,FColor::Red, TEXT("FIRING"));
+		if (ProjectileClass)
+		{
+			FVector CameraLocation;
+			FRotator CameraRotation;
+			GetActorEyesViewPoint(CameraLocation,CameraRotation);
+
+			MuzzleOffset.Set(100.0f,0.0f,0.0f);
+
+			FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
+
+			FRotator MuzzleRotation = CameraRotation;
+			MuzzleRotation.Pitch += 10.0f;
+
+			UWorld* World = GetWorld();
+			if (World)
+			{
+				FActorSpawnParameters SpawnParams;
+				SpawnParams.Owner = this;
+				SpawnParams.Instigator = GetInstigator();
+
+				AFPSProjectile* Projectile = World -> SpawnActor<AFPSProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation,SpawnParams);
+				if(Projectile)
+				{
+
+					FVector LaunchDirection = MuzzleRotation.Vector();
+					Projectile->FireInDirection(LaunchDirection);
+				}
+			}
+		}
 	}
 }
 
