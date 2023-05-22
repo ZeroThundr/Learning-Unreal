@@ -20,6 +20,30 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "PCG",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemSteam",
+			"Enabled": true
+		},
+		{
+			"Name": "SteamAudio",
+			"Enabled": true
+		},
+		{
+			"Name": "SteamController",
+			"Enabled": true
+		},
+		{
+			"Name": "SteamShared",
+			"Enabled": true
+		},
+		{
+			"Name": "NiagaraFluids",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [
